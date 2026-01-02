@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
+from html import login_page
 
 app = FastAPI()
 
@@ -12,6 +13,7 @@ def health():
 def echo(data):
     return JSONResponse({"echo": data})
 
-app.get("/")(root)
+#app.get("/")(root)
+app.get("/", response_class=HTMLResponse)(lambda: login_page)
 app.get("/health")(health)
 app.post("/echo")(echo)
