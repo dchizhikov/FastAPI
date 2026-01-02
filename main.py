@@ -1,25 +1,25 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 import os
 
-app = FastAPI(title="My API", version="1.0.0")
+app = FastAPI()
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World!", "status": "ok"}
+# HTML главная страница
+login_page = """
+<!DOCTYPE html>
+<html>
+<head><title>My App</title></head>
+<body>
+    <h1>Hello FastAPI!</h1>
+    <p><a href="/docs">Swagger</a></p>
+</body>
+</html>
+"""
 
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "timestamp": "2026-01-02"}
-
-@app.post("/echo")
-async def echo(request: Request):
-    data = await request.json()
-    return JSONResponse({"echo": data, "received": True})
-
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/", response_class=HTMLResponse)(lambda: login_page)
+@app.get("/health")(lambda: {"status": "healthy"})
+@app.post("/echo")(lambda request: JSONResponse({"echo": request.json()}))
+@app.get("/items/{item_id}")(lambda item_id, q=None: {"item_id": item_id, "q": q})
 
 if __name__ == "__main__":
     import uvicorn
